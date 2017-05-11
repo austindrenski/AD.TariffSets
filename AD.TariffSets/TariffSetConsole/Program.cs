@@ -14,8 +14,10 @@ namespace TariffSetConsole
         /// </summary>
         public static void Main()
         {
-            const string directory = "C:\\Work\\Austin\\April 18 - new work";
 
+            //const string directory = "C:\\Work\\Austin\\April 18 - new work";
+            const string directory = "C:\\Users\\adren\\Desktop\\Argentina V2\\";
+            
             Task task =
                 TargetTariffYearFactory.Create(
                     $"{directory}\\Tariff data\\Downloads\\MFN_Applied_4_16_17.zip",

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using AD.TariffSets.Records;
 using JetBrains.Annotations;
+using AD.TariffSets.Records;
 
 namespace AD.TariffSets
 {

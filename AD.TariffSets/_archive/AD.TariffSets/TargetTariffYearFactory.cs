@@ -4,9 +4,9 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AD.IO.Standard;
-using AD.TariffSets.Records;
 using JetBrains.Annotations;
+using AD.TariffSets.Records;
+using AD.IO.Standard;
 
 namespace AD.TariffSets
 {
