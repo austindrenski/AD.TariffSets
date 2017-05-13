@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -74,30 +75,35 @@ namespace AD.TariffSets
                            {
                                using (ZipArchive archive = new ZipArchive(x.Open()))
                                {
+                                   Stack<string> stack = new Stack<string>(archive.Entries.Count);
+
                                    foreach (ZipArchiveEntry entry in archive.Entries)
                                    {
+                                       if (entry.Name.Equals("[Content_Types].xml"))
+                                       {
+                                           continue;
+                                       }
                                        if (!entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                                        {
                                            await Console.Out.WriteLineAsync($"{DateTime.Now}: Skipping non-delimited file '{entry.FullName}'");
                                            continue;
                                        }
-
                                        using (StreamReader reader = new StreamReader(entry.Open()))
                                        {
-                                           return await reader.ReadToEndAsync();
+                                           stack.Push(await reader.ReadToEndAsync());
                                        }
                                    }
-                                   return null;
+
+                                   return stack;
                                }
                            })
-                       .Where(x => x.Result != null)
                        .AsParallel()
+                       .SelectMany(x => x.Result)
                        .SelectMany(
                            x =>
-                               x.Result
-                                .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                               x.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                                 .Skip(header ? 1 : 0)
-                                .SplitDelimitedLine(',')
+                                .SplitDelimitedLine(delimiter)
                                 .Select(a => a.Select(b => b.Trim()))
                                 .Select(a => a.ToArray())
                                 .Select(constructor));
