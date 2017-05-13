@@ -20,8 +20,8 @@ namespace AD.TariffSets
         /// <param name="bulkArchiveFile">
         /// A zip archive containing zip archives containing delimited files.
         /// </param>
-        /// <param name="selector">
-        /// A transform function to apply to each line of a file.
+        /// <param name="constructor">
+        /// A transform function to apply to create a record from each line in the file.
         /// </param>
         /// <param name="delimiter">
         /// The character delimiting values in the delimited files.
@@ -37,14 +37,17 @@ namespace AD.TariffSets
         /// 
         /// -BulkArchive.zip
         /// ---InnerArchive0.zip
+        /// -----[Content_Types].xml
         /// -----File_0_0.csv 
         /// -----File_0_1.csv
         /// -----File_0_2.csv
         /// ---InnerArchive1.zip
+        /// -----[Content_Types].xml
         /// -----File_1_0.csv 
         /// -----File_1_1.csv
         /// -----File_1_2.csv
         /// ---InnerArchive2.zip
+        /// -----[Content_Types].xml
         /// -----File_2_0.csv 
         /// -----File_2_1.csv
         /// -----File_2_2.csv
@@ -52,15 +55,15 @@ namespace AD.TariffSets
         [Pure]
         [NotNull]
         [ItemNotNull]
-        public static ParallelQuery<TRecord> ReadBulkArchive<TRecord>([NotNull] this ZipFilePath bulkArchiveFile, [NotNull] Func<string[], TRecord> selector, char delimiter = ',', bool header = true) where TRecord : TariffRecord
+        public static ParallelQuery<TRecord> ReadBulkArchive<TRecord>([NotNull] this ZipFilePath bulkArchiveFile, [NotNull] Func<string[], TRecord> constructor, char delimiter = ',', bool header = true) where TRecord : TariffRecord
         {
             if (bulkArchiveFile is null)
             {
                 throw new ArgumentNullException(nameof(bulkArchiveFile));
             }
-            if (selector is null)
+            if (constructor is null)
             {
-                throw new ArgumentNullException(nameof(selector));
+                throw new ArgumentNullException(nameof(constructor));
             }
 
             return
@@ -69,35 +72,35 @@ namespace AD.TariffSets
                        .Select(
                            async x =>
                            {
-                               using (Stream stream = x.Open())
+                               using (ZipArchive archive = new ZipArchive(x.Open()))
                                {
-                                   using (ZipArchive archive = new ZipArchive(stream))
+                                   foreach (ZipArchiveEntry entry in archive.Entries)
                                    {
-                                       foreach (ZipArchiveEntry entry in archive.Entries.Where(y => y.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)))
+                                       if (!entry.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                                        {
-                                           using (Stream innerStream = entry.Open())
-                                           {
-                                               using (StreamReader reader = new StreamReader(innerStream))
-                                               {
-                                                   return await reader.ReadToEndAsync();
-                                               }
-                                           }
+                                           await Console.Out.WriteLineAsync($"{DateTime.Now}: Skipping non-delimited file '{entry.FullName}'");
+                                           continue;
                                        }
-                                       return null;
+
+                                       using (StreamReader reader = new StreamReader(entry.Open()))
+                                       {
+                                           return await reader.ReadToEndAsync();
+                                       }
                                    }
+                                   return null;
                                }
                            })
+                       .Where(x => x.Result != null)
                        .AsParallel()
-                       .Select(x => x.Result)
-                       .Where(x => x != null)
                        .SelectMany(
                            x =>
-                               x.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                               x.Result
+                                .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                                 .Skip(header ? 1 : 0)
                                 .SplitDelimitedLine(',')
                                 .Select(a => a.Select(b => b.Trim()))
                                 .Select(a => a.ToArray())
-                                .Select(selector));
+                                .Select(constructor));
         }
     }
 }
