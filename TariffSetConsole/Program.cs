@@ -15,8 +15,7 @@ namespace TariffSetConsole
         public static void Main()
         {
 
-            //const string directory = "\\Work\\Austin\\April 18 - new work";
-            const string directory = "\\Users\\adren\\Desktop\\Argentina_V2";
+            const string directory = "\\Work\\Austin\\April 18 - new work";
             
             Task task =
                 TargetTariffYearFactory.Create(
