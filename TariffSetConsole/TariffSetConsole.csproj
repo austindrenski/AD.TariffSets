@@ -31,4 +31,10 @@
     <ProjectReference Include="..\AD.TariffSets\AD.TariffSets.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
+  </ItemGroup>
+
 </Project>
