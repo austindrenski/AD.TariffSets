@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TariffSetConsole", "TariffS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AD.TariffSets", "AD.TariffSets\AD.TariffSets.csproj", "{9F4DAD68-81D6-4773-8780-49B93EF6A264}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{28CF2475-F94A-4DC6-86A0-AE335D25002E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{9F4DAD68-81D6-4773-8780-49B93EF6A264}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F4DAD68-81D6-4773-8780-49B93EF6A264}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F4DAD68-81D6-4773-8780-49B93EF6A264}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28CF2475-F94A-4DC6-86A0-AE335D25002E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28CF2475-F94A-4DC6-86A0-AE335D25002E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28CF2475-F94A-4DC6-86A0-AE335D25002E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28CF2475-F94A-4DC6-86A0-AE335D25002E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
